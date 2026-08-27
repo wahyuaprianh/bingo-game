@@ -263,11 +263,13 @@ export default function Page() {
 
   return (
     <main className="flex min-h-screen items-start justify-center px-4 pb-16 pt-7">
-      <div className="fixed right-3 top-3 z-40 rounded-full border border-line bg-bg-panel px-3 py-1 text-[10px] tracking-widest text-muted">
-        <span className={connected ? "text-teal" : ""}>
-          {connected ? "LIVE" : "MENGHUBUNGKAN..."}
-        </span>
-      </div>
+      {screen !== "home" && (
+        <div className="fixed right-3 top-3 z-40 rounded-full border border-line bg-bg-panel px-3 py-1 text-[10px] tracking-widest text-muted">
+          <span className={connected ? "text-teal" : ""}>
+            {connected ? "LIVE" : "MENGHUBUNGKAN..."}
+          </span>
+        </div>
+      )}
 
       <Confetti show={screen === "result" && iWon} />
 
