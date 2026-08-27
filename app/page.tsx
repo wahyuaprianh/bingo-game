@@ -15,6 +15,7 @@ import {
   Role,
   Room,
   checkBingo,
+  getCompletedLines,
   genBoard,
   genPlayerId,
   genRoomCode,
@@ -104,10 +105,11 @@ export default function Page() {
       guestId: null,
       guestName: null,
       status: "waiting",
-      drawOrder: shuffle(Array.from({ length: 25 }, (_, i) => i + 1)),
       drawnNumbers: [],
       currentTurn: "host",
-      winner: null
+      winner: null,
+      hostScore: 0,
+      guestScore: 0
     };
 
     console.log("Saving new room to Firestore...", newRoom);
@@ -182,7 +184,7 @@ export default function Page() {
     listenRoom(code);
   }
 
-  // React to room changes (join detection, win detection)
+  // React to room changes (join detection, win detection, score synchronization)
   useEffect(() => {
     if (!room || !role) return;
 
@@ -201,11 +203,26 @@ export default function Page() {
         }
         lastDrawnCount.current = room.drawnNumbers.length;
       }
-      const line = checkBingo(board, drawnSet);
-      if (room.status === "playing" && line && !handledWinLocally.current) {
+
+      // Calculate completed lines locally
+      const localLines = getCompletedLines(board, drawnSet);
+      const localScore = localLines.length;
+
+      // Sync local score to Firestore if it is different
+      const dbScore = role === "host" ? room.hostScore : room.guestScore;
+      if (localScore !== dbScore && room.status === "playing") {
+        const scoreField = role === "host" ? "hostScore" : "guestScore";
+        updateDoc(roomRef(roomCode), { [scoreField]: localScore }).catch((err) => {
+          console.error("Failed to update score in Firestore:", err);
+        });
+      }
+
+      // Win check: if score >= 5, claim the win
+      if (room.status === "playing" && localScore >= 5 && !handledWinLocally.current) {
         handledWinLocally.current = true;
         claimWin();
       }
+
       if (room.status === "finished" && room.winner) {
         setScreen("result");
       }
@@ -227,22 +244,25 @@ export default function Page() {
     }
   }
 
-  async function handleDraw() {
+  async function handleSelectCell(num: number) {
     if (!room || !role) return;
+    if (room.status !== "playing" || room.currentTurn !== role) return;
+    if (room.drawnNumbers.includes(num)) return;
+
+    sfx("draw", soundOn);
+
     try {
       await runTransaction(db, async (tx) => {
         const snap = await tx.get(roomRef(roomCode));
         if (!snap.exists()) return;
         const r = snap.data() as Room;
-        if (r.status !== "playing" || r.currentTurn !== role || !r.drawOrder.length) return;
-        const drawOrder = r.drawOrder.slice();
-        const next = drawOrder.shift()!;
-        const drawnNumbers = r.drawnNumbers.concat([next]);
+        if (r.status !== "playing" || r.currentTurn !== role || r.drawnNumbers.includes(num)) return;
+        const drawnNumbers = r.drawnNumbers.concat([num]);
         const currentTurn: Role = r.currentTurn === "host" ? "guest" : "host";
-        tx.update(roomRef(roomCode), { drawOrder, drawnNumbers, currentTurn });
+        tx.update(roomRef(roomCode), { drawnNumbers, currentTurn });
       });
-    } catch {
-      /* ignore */
+    } catch (err) {
+      console.error("Error selecting number:", err);
     }
   }
 
@@ -265,10 +285,13 @@ export default function Page() {
   }
 
   const drawnSet = new Set(room?.drawnNumbers ?? []);
-  const line = board ? checkBingo(board, drawnSet) : null;
+  const completedLines = board ? getCompletedLines(board, drawnSet) : [];
+  const bingoIndices = new Set(completedLines.flat());
   const isMyTurn = !!room && !!role && room.currentTurn === role;
   const oppName = room && role ? (role === "host" ? room.guestName : room.hostName) : null;
   const iWon = room?.winner === role;
+  const myScore = role === "host" ? (room?.hostScore ?? 0) : (room?.guestScore ?? 0);
+  const oppScore = role === "host" ? (room?.guestScore ?? 0) : (room?.hostScore ?? 0);
 
   return (
     <main className="flex min-h-screen items-start justify-center px-4 pb-16 pt-7">
@@ -435,7 +458,7 @@ export default function Page() {
                       : "border-coral/35 bg-coral/10 text-coral"
                   }`}
                 >
-                  {isMyTurn ? "Giliranmu — tarik angka!" : `Giliran ${oppName ?? "lawan"}`}
+                  {isMyTurn ? "Giliranmu — pilih angka!" : `Giliran ${oppName ?? "lawan"}`}
                 </div>
                 <button
                   onClick={() => setSoundOn((s) => !s)}
@@ -454,6 +477,61 @@ export default function Page() {
                 </span>
               </div>
 
+              {/* Score Panel B-I-N-G-O */}
+              <div className="mb-4.5 mb-5 grid grid-cols-2 gap-4 rounded-2xl border border-line bg-gradient-to-b from-bg-panel to-bg-panel-2 p-4 shadow-panel text-center">
+                {/* Kamu */}
+                <div className="flex flex-col items-center border-r border-line pr-2">
+                  <div className="mb-2 text-[10px] uppercase tracking-widest text-muted">BINGO KAMU</div>
+                  <div className="flex gap-1">
+                    {["B", "I", "N", "G", "O"].map((l, i) => {
+                      const active = myScore > i;
+                      return (
+                        <span
+                          key={l}
+                          className={`flex h-8 w-8 items-center justify-center rounded-lg font-display text-sm font-bold transition-all ${
+                            active
+                              ? "bg-gradient-to-br from-gold to-gold-dark text-[#3a2900] shadow-[0_0_8px_rgba(242,183,5,0.5)] scale-105 animate-pulse"
+                              : "border border-line bg-bg-deep text-muted/30"
+                          }`}
+                        >
+                          {l}
+                        </span>
+                      );
+                    })}
+                  </div>
+                  <div className="mt-1.5 text-[11px] text-muted">
+                    {myScore} dari 5 garis
+                  </div>
+                </div>
+
+                {/* Lawan */}
+                <div className="flex flex-col items-center pl-2">
+                  <div className="mb-2 text-[10px] uppercase tracking-widest text-muted">
+                    BINGO {oppName ? oppName.toUpperCase() : "LAWAN"}
+                  </div>
+                  <div className="flex gap-1">
+                    {["B", "I", "N", "G", "O"].map((l, i) => {
+                      const active = oppScore > i;
+                      return (
+                        <span
+                          key={l}
+                          className={`flex h-8 w-8 items-center justify-center rounded-lg font-display text-sm font-bold transition-all ${
+                            active
+                              ? "bg-gradient-to-br from-coral to-[#e14a3b] text-[#fff2ee] shadow-[0_0_8px_rgba(255,107,91,0.5)] scale-105 animate-pulse"
+                              : "border border-line bg-bg-deep text-muted/30"
+                          }`}
+                        >
+                          {l}
+                        </span>
+                      );
+                    })}
+                  </div>
+                  <div className="mt-1.5 text-[11px] text-muted">
+                    {oppScore} dari 5 garis
+                  </div>
+                </div>
+              </div>
+
               <div className="mb-4.5 mb-5 rounded-2xl border border-line bg-bg-deep p-4">
                 <div className="mb-2.5 text-[10px] tracking-widest text-muted">
                   ANGKA YANG SUDAH DIPANGGIL ({room.drawnNumbers.length}/25)
@@ -468,30 +546,38 @@ export default function Page() {
               </div>
 
               <div className="mb-4.5 mb-5 grid grid-cols-5 gap-2">
-                {board.map((n, idx) => (
-                  <Cell
-                    key={n}
-                    num={n}
-                    marked={drawnSet.has(n)}
-                    onBingoLine={!!line && line.includes(idx)}
-                  />
-                ))}
+                {board.map((n, idx) => {
+                  const marked = drawnSet.has(n);
+                  const clickable = isMyTurn && !marked && room.status === "playing";
+                  return (
+                    <Cell
+                      key={n}
+                      num={n}
+                      marked={marked}
+                      onBingoLine={bingoIndices.has(idx)}
+                      clickable={clickable}
+                      onClick={() => handleSelectCell(n)}
+                    />
+                  );
+                })}
               </div>
 
-              <motion.button
-                whileTap={{ scale: 0.97 }}
-                disabled={!(isMyTurn && room.status === "playing" && room.drawOrder.length > 0)}
-                onClick={handleDraw}
-                className="w-full rounded-xl bg-gradient-to-r from-gold to-[#ffcf3d] py-3.5 font-display text-[15px] font-semibold text-[#3a2900] shadow-[0_6px_16px_rgba(242,183,5,0.28)] disabled:opacity-40"
-              >
-                Tarik Angka
-              </motion.button>
-              <div className="mt-2.5 text-center text-xs tracking-wide text-muted">
-                {room.status === "playing"
-                  ? isMyTurn
-                    ? 'Klik "Tarik Angka" untuk memanggil angka berikutnya.'
-                    : "Menunggu lawan menarik angka..."
-                  : ""}
+              <div className="rounded-xl border border-dashed border-line bg-bg-deep/40 p-4 text-center">
+                <div className="text-xs text-muted leading-relaxed">
+                  {room.status === "playing" ? (
+                    isMyTurn ? (
+                      <span className="font-semibold text-teal">
+                        👉 Giliranmu! Klik salah satu angka di atas yang belum ditandai untuk memanggilnya.
+                      </span>
+                    ) : (
+                      <span>
+                        ⏳ Menunggu {oppName ?? "lawan"} memilih angka berikutnya...
+                      </span>
+                    )
+                  ) : (
+                    ""
+                  )}
+                </div>
               </div>
             </motion.div>
           )}
@@ -504,10 +590,10 @@ export default function Page() {
                 </h2>
                 <div className="text-[13px] text-muted">
                   {iWon
-                    ? "Kerja bagus! Garismu lengkap duluan."
+                    ? `Kerja bagus! Kamu mencapai 5 garis BINGO duluan. Skor akhir: ${myScore} - ${oppScore}`
                     : `${
                         room.winner === "host" ? room.hostName : room.guestName
-                      } menyelesaikan garis lebih dulu.`}
+                      } menyelesaikan 5 garis BINGO lebih dulu. Skor akhir: ${myScore} - ${oppScore}`}
                 </div>
               </div>
 
@@ -517,7 +603,7 @@ export default function Page() {
                     key={n}
                     num={n}
                     marked={drawnSet.has(n)}
-                    onBingoLine={!!line && line.includes(idx)}
+                    onBingoLine={bingoIndices.has(idx)}
                   />
                 ))}
               </div>

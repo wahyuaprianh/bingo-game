@@ -7,10 +7,11 @@ export type Room = {
   guestId: string | null;
   guestName: string | null;
   status: "waiting" | "playing" | "finished";
-  drawOrder: number[];
   drawnNumbers: number[];
   currentTurn: Role;
   winner: Role | null;
+  hostScore: number;
+  guestScore: number;
 };
 
 export function shuffle<T>(arr: T[]): T[] {
@@ -41,15 +42,23 @@ export function bingoLines(): number[][] {
   const lines: number[][] = [];
   for (let r = 0; r < 5; r++) lines.push([0, 1, 2, 3, 4].map((c) => r * 5 + c));
   for (let c = 0; c < 5; c++) lines.push([0, 1, 2, 3, 4].map((r) => r * 5 + c));
-  lines.push([0, 6, 12, 18, 24]);
-  lines.push([4, 8, 12, 16, 20]);
+  lines.push([0, 6, 12, 18, 24]); // diagonal top-left to bottom-right
+  lines.push([4, 8, 12, 16, 20]); // diagonal top-right to bottom-left
   return lines;
 }
 
-export function checkBingo(board: number[], drawnSet: Set<number>): number[] | null {
+export function getCompletedLines(board: number[], drawnSet: Set<number>): number[][] {
   const marked = board.map((n) => drawnSet.has(n));
+  const completed: number[][] = [];
   for (const line of bingoLines()) {
-    if (line.every((idx) => marked[idx])) return line;
+    if (line.every((idx) => marked[idx])) {
+      completed.push(line);
+    }
   }
-  return null;
+  return completed;
+}
+
+export function checkBingo(board: number[], drawnSet: Set<number>): number[] | null {
+  const completed = getCompletedLines(board, drawnSet);
+  return completed.length > 0 ? completed[0] : null;
 }
