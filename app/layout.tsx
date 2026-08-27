@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { Fredoka, Space_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans, Space_Mono } from "next/font/google";
 import "./globals.css";
 
-const fredoka = Fredoka({
+const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
-  variable: "--font-fredoka"
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-sans"
 });
 
 const spaceMono = Space_Mono({
@@ -24,8 +24,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="id" className={`${fredoka.variable} ${spaceMono.variable}`}>
-      <body className="font-mono">{children}</body>
+    <html lang="id" className={`${plusJakartaSans.variable} ${spaceMono.variable}`}>
+      <body className="font-sans antialiased bg-[#090a0f] text-[#f4f4f5]">{children}</body>
     </html>
   );
 }

@@ -306,34 +306,33 @@ export default function Page() {
       <Confetti show={screen === "result" && iWon} />
 
       <div className="w-full max-w-xl">
-        <div className="mb-6 flex items-center justify-center gap-2.5">
-          <div
-            className="flex h-9 w-9 items-center justify-center rounded-full font-display text-base font-bold text-[#3a2900] shadow-ball"
-            style={{
-              background: "radial-gradient(circle at 35% 30%, #fff5d0, #f2b705 55%, #c48f02 100%)"
-            }}
-          >
-            B
+        <div className="mb-8 flex items-center justify-center gap-3">
+          <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo to-violet-600 shadow-md">
+            <span className="font-mono text-lg font-black text-white select-none">B</span>
+            <div className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full border border-bg-deep bg-teal" />
           </div>
-          <h1 className="bg-gradient-to-r from-gold to-coral bg-clip-text font-display text-2xl font-bold tracking-wide text-transparent">
-            BINGO DUEL
-          </h1>
+          <div className="flex flex-col text-left">
+            <h1 className="bg-gradient-to-r from-indigo via-purple-400 to-teal bg-clip-text font-sans text-2xl font-extrabold tracking-tight text-transparent leading-none">
+              BINGO DUEL
+            </h1>
+            <span className="text-[10px] uppercase tracking-[0.25em] text-muted mt-0.5 leading-none">Realtime Multiplayer</span>
+          </div>
         </div>
 
         <AnimatePresence mode="wait">
           {screen === "home" && (
             <motion.div key="home" {...fade}>
-              <div className="mb-4 rounded-3xl border border-line bg-gradient-to-b from-bg-panel to-bg-panel-2 p-6 shadow-panel">
-                <div className="mb-1.5 text-[11px] uppercase tracking-[3px] text-teal">
+              <div className="mb-4 rounded-3xl border border-line bg-bg-panel/40 backdrop-blur-md p-6 shadow-panel">
+                <div className="mb-1.5 text-[11px] uppercase tracking-[3px] text-teal font-bold">
                   Mulai Permainan
                 </div>
-                <h2 className="mb-1 font-display text-xl font-semibold">Siapa namamu?</h2>
+                <h2 className="mb-1 font-sans text-xl font-bold">Siapa namamu?</h2>
                 <p className="mb-5 text-[13px] leading-relaxed text-muted">
                   Buat room baru lalu bagikan kodenya, atau masukkan kode dari temanmu. Real-time,
                   bisa dimainkan di 2 perangkat berbeda.
                 </p>
 
-                <label className="mb-1.5 block text-[11px] uppercase tracking-wider text-muted">
+                <label className="mb-1.5 block text-[11px] uppercase tracking-wider text-muted/80 font-semibold">
                   Nama Pemain
                 </label>
                 <input
@@ -342,24 +341,24 @@ export default function Page() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="mis. Wahyu"
-                  className="mb-4 w-full rounded-xl border border-line bg-bg-deep px-3.5 py-3 text-[15px] tracking-wide text-ink outline-none focus:border-teal"
+                  className="mb-5 w-full rounded-xl border border-line/70 bg-bg-deep/80 px-4 py-3.5 text-[15px] text-ink outline-none transition-all focus:border-teal/80 focus:ring-2 focus:ring-teal/15 focus:bg-bg-deep"
                 />
 
                 <motion.button
-                  whileTap={{ scale: 0.97 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={handleCreate}
-                  className="w-full rounded-xl bg-gradient-to-r from-gold to-[#ffcf3d] py-3.5 font-display text-[15px] font-semibold text-[#3a2900] shadow-[0_6px_16px_rgba(242,183,5,0.28)]"
+                  className="w-full rounded-xl bg-gradient-to-r from-indigo to-violet-600 hover:from-indigo-dark hover:to-violet-700 py-3.5 font-sans text-[15px] font-semibold text-white shadow-[0_4px_14px_rgba(99,102,241,0.25)] transition-all"
                 >
                   Buat Room Baru
                 </motion.button>
 
-                <div className="my-5 flex items-center gap-3 text-[11px] tracking-widest text-muted">
-                  <span className="h-px flex-1 bg-line" />
+                <div className="my-5 flex items-center gap-3 text-[11px] tracking-widest text-muted/60">
+                  <span className="h-px flex-1 bg-line/65" />
                   ATAU
-                  <span className="h-px flex-1 bg-line" />
+                  <span className="h-px flex-1 bg-line/65" />
                 </div>
 
-                <label className="mb-1.5 block text-[11px] uppercase tracking-wider text-muted">
+                <label className="mb-1.5 block text-[11px] uppercase tracking-wider text-muted/80 font-semibold">
                   Kode Room
                 </label>
                 <input
@@ -368,20 +367,20 @@ export default function Page() {
                   value={codeInput}
                   onChange={(e) => setCodeInput(e.target.value.toUpperCase())}
                   placeholder="mis. K3J9P"
-                  className="mb-4 w-full rounded-xl border border-line bg-bg-deep px-3.5 py-3 text-[15px] uppercase tracking-wide text-ink outline-none focus:border-teal"
+                  className="mb-5 w-full rounded-xl border border-line/70 bg-bg-deep/80 px-4 py-3.5 text-[15px] uppercase font-mono tracking-widest text-ink outline-none transition-all focus:border-teal/80 focus:ring-2 focus:ring-teal/15 focus:bg-bg-deep"
                 />
 
                 <motion.button
-                  whileTap={{ scale: 0.97 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={handleJoin}
-                  className="w-full rounded-xl border-[1.5px] border-teal py-3.5 font-display text-[15px] font-semibold text-teal"
+                  className="w-full rounded-xl border border-line hover:border-teal/50 bg-bg-panel/20 hover:bg-teal/5 py-3.5 font-sans text-[15px] font-semibold text-teal transition-all"
                 >
                   Gabung ke Room
                 </motion.button>
 
-                {error && <div className="mt-3 text-center text-xs text-coral">{error}</div>}
+                {error && <div className="mt-3 text-center text-xs text-rose">{error}</div>}
               </div>
-              <div className="text-center text-[11px] leading-relaxed text-muted">
+              <div className="text-center text-[11px] leading-relaxed text-muted/80">
                 25 angka acak · garis horizontal, vertikal, atau diagonal = BINGO 🎉
               </div>
             </motion.div>
@@ -389,43 +388,50 @@ export default function Page() {
 
           {screen === "wait" && room && (
             <motion.div key="wait" {...fade}>
-              <div className="rounded-3xl border border-line bg-gradient-to-b from-bg-panel to-bg-panel-2 p-6 shadow-panel">
-                <div className="mb-1.5 text-[11px] uppercase tracking-[3px] text-teal">
+              <div className="rounded-3xl border border-line bg-bg-panel/40 backdrop-blur-md p-6 shadow-panel">
+                <div className="mb-1.5 text-[11px] uppercase tracking-[3px] text-teal font-bold">
                   Menunggu Lawan
                 </div>
-                <h2 className="mb-1 font-display text-xl font-semibold">Ajak temanmu main</h2>
+                <h2 className="mb-1 font-sans text-xl font-bold">Ajak temanmu main</h2>
                 <p className="mb-5 text-[13px] leading-relaxed text-muted">
                   Bagikan kode room ini ke temanmu, ia buka link yang sama (boleh di HP/laptop
                   berbeda) lalu memasukkan kode ini.
                 </p>
 
-                <div className="mb-4 flex items-center justify-between rounded-2xl border-[1.5px] border-dashed border-gold-dark bg-bg-deep px-4.5 py-4">
+                <div className="mb-6 flex items-center justify-between rounded-2xl border border-line bg-bg-deep/80 px-5 py-4.5">
                   <div>
-                    <div className="text-[10px] tracking-widest text-muted">KODE ROOM</div>
-                    <div className="font-display text-3xl font-bold tracking-[6px] text-gold">
+                    <div className="text-[9px] uppercase tracking-[0.2em] text-muted/60 mb-1">KODE ROOM</div>
+                    <div className="font-mono text-3xl font-extrabold tracking-[0.2em] text-gold animate-pulse">
                       {roomCode}
                     </div>
                   </div>
                   <button
                     onClick={copyCode}
-                    className="rounded-lg border border-line bg-bg-panel-2 px-3 py-2 text-[11px] text-teal"
+                    className={`rounded-xl px-4 py-2 text-xs font-semibold tracking-wide transition-all ${
+                      copied
+                        ? "bg-teal/15 text-teal border border-teal/20"
+                        : "bg-bg-panel hover:bg-bg-panel-2 text-ink border border-line"
+                    }`}
                   >
                     {copied ? "TERSALIN" : "SALIN"}
                   </button>
                 </div>
 
-                <div className="flex gap-2.5">
-                  <div className="flex flex-1 items-center gap-2 rounded-xl border border-line bg-bg-deep px-3 py-2.5 text-[13px]">
-                    <div className="h-6 w-6 flex-shrink-0 rounded-full bg-teal" />
+                <div className="flex gap-3">
+                  <div className="flex flex-1 items-center gap-2.5 rounded-2xl border border-line bg-bg-deep/50 px-4 py-3.5 text-[13px] font-medium text-ink">
+                    <span className="relative flex h-2.5 w-2.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-teal"></span>
+                    </span>
                     {room.hostName} (kamu)
                   </div>
-                  <div className="flex flex-1 items-center gap-2 rounded-xl border border-dashed border-line bg-bg-deep px-3 py-2.5 text-[13px] text-muted">
-                    <div className="h-6 w-6 flex-shrink-0 rounded-full border-[1.5px] border-dashed border-line" />
-                    Menunggu...
+                  <div className="flex flex-1 items-center gap-2.5 rounded-2xl border border-dashed border-line/70 bg-bg-deep/20 px-4 py-3.5 text-[13px] font-medium text-muted/40">
+                    <span className="h-2 w-2 rounded-full bg-line animate-pulse"></span>
+                    Menunggu lawan...
                   </div>
                 </div>
 
-                <div className="mt-4 flex items-center gap-2.5 text-[13px] text-muted">
+                <div className="mt-4 flex items-center gap-2.5 text-[13px] text-muted/80">
                   <span className="h-2 w-2 animate-pulse-dot rounded-full bg-teal" />
                   <span
                     className="h-2 w-2 animate-pulse-dot rounded-full bg-teal"
@@ -440,7 +446,7 @@ export default function Page() {
 
                 <button
                   onClick={handleNewGame}
-                  className="mt-4.5 mt-5 w-full rounded-xl border border-dashed border-line py-3 text-[15px] font-display font-semibold text-muted"
+                  className="mt-6 w-full rounded-xl border border-line hover:border-rose/50 bg-bg-panel/20 hover:bg-rose/5 py-3 text-[15px] font-sans font-semibold text-muted hover:text-rose transition-all"
                 >
                   Batalkan
                 </button>
@@ -450,27 +456,28 @@ export default function Page() {
 
           {screen === "game" && room && board && (
             <motion.div key="game" {...fade}>
-              <div className="mb-4 flex flex-wrap items-center justify-between gap-2.5">
+              <div className="mb-4 flex items-center justify-between gap-2.5 select-none">
                 <div
-                  className={`flex items-center gap-2 rounded-full border px-3.5 py-2 font-display text-[13px] font-semibold ${
+                  className={`flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-bold uppercase tracking-wider ${
                     isMyTurn
-                      ? "border-teal/40 bg-teal/15 text-teal"
-                      : "border-coral/35 bg-coral/10 text-coral"
+                      ? "border-teal/30 bg-teal/10 text-teal"
+                      : "border-indigo/35 bg-indigo/10 text-indigo"
                   }`}
                 >
-                  {isMyTurn ? "Giliranmu — pilih angka!" : `Giliran ${oppName ?? "lawan"}`}
+                  <span className={`h-2 w-2 rounded-full ${isMyTurn ? "bg-teal animate-pulse" : "bg-indigo animate-pulse"}`} />
+                  {isMyTurn ? "Giliran Anda" : `Giliran ${oppName ?? "Lawan"}`}
                 </div>
                 <button
                   onClick={() => setSoundOn((s) => !s)}
-                  className="rounded-lg border border-line px-3 py-2 text-[13px] text-muted"
+                  className="rounded-full border border-line hover:border-teal/50 bg-bg-panel/20 hover:bg-teal/5 px-4 py-2 text-xs font-semibold text-muted hover:text-teal transition-all"
                 >
-                  {soundOn ? "🔊 Suara: ON" : "🔇 Suara: OFF"}
+                  {soundOn ? "🔊 Suara: On" : "🔇 Suara: Off"}
                 </button>
               </div>
 
-              <div className="mb-3.5 flex items-center justify-between rounded-xl border border-line bg-bg-deep px-3.5 py-2.5 text-xs text-muted">
+              <div className="mb-4 flex items-center justify-between rounded-2xl border border-line bg-bg-deep/50 px-4 py-3 text-xs text-muted/80">
                 <span>
-                  Room <b className="text-ink">{roomCode}</b>
+                  Room: <b className="text-ink font-mono tracking-wider">{roomCode}</b>
                 </span>
                 <span>
                   Lawan: <b className="text-ink">{oppName ?? "-"}</b>
@@ -478,20 +485,20 @@ export default function Page() {
               </div>
 
               {/* Score Panel B-I-N-G-O */}
-              <div className="mb-4.5 mb-5 grid grid-cols-2 gap-4 rounded-2xl border border-line bg-gradient-to-b from-bg-panel to-bg-panel-2 p-4 shadow-panel text-center">
+              <div className="mb-6 grid grid-cols-2 gap-4 rounded-3xl border border-line bg-bg-panel/40 backdrop-blur-md p-5 shadow-panel text-center">
                 {/* Kamu */}
-                <div className="flex flex-col items-center border-r border-line pr-2">
-                  <div className="mb-2 text-[10px] uppercase tracking-widest text-muted">BINGO KAMU</div>
+                <div className="flex flex-col items-center border-r border-line/65 pr-2">
+                  <div className="mb-2 text-[9px] uppercase tracking-[0.2em] font-semibold text-muted/60">BINGO KAMU</div>
                   <div className="flex gap-1">
                     {["B", "I", "N", "G", "O"].map((l, i) => {
                       const active = myScore > i;
                       return (
                         <span
                           key={l}
-                          className={`flex h-8 w-8 items-center justify-center rounded-lg font-display text-sm font-bold transition-all ${
+                          className={`flex h-8 w-8 items-center justify-center rounded-xl font-sans text-sm font-black transition-all duration-300 ${
                             active
-                              ? "bg-gradient-to-br from-gold to-gold-dark text-[#3a2900] shadow-[0_0_8px_rgba(242,183,5,0.5)] scale-105 animate-pulse"
-                              : "border border-line bg-bg-deep text-muted/30"
+                              ? "bg-gradient-to-br from-gold to-gold-dark text-[#3a2900] shadow-[0_0_12px_rgba(251,191,36,0.35)] scale-105"
+                              : "border border-line bg-bg-deep/60 text-muted/20"
                           }`}
                         >
                           {l}
@@ -499,14 +506,14 @@ export default function Page() {
                       );
                     })}
                   </div>
-                  <div className="mt-1.5 text-[11px] text-muted">
-                    {myScore} dari 5 garis
+                  <div className="mt-2 text-[10px] font-semibold text-muted/80">
+                    {myScore} / 5 Garis
                   </div>
                 </div>
 
                 {/* Lawan */}
                 <div className="flex flex-col items-center pl-2">
-                  <div className="mb-2 text-[10px] uppercase tracking-widest text-muted">
+                  <div className="mb-2 text-[9px] uppercase tracking-[0.2em] font-semibold text-muted/60">
                     BINGO {oppName ? oppName.toUpperCase() : "LAWAN"}
                   </div>
                   <div className="flex gap-1">
@@ -515,10 +522,10 @@ export default function Page() {
                       return (
                         <span
                           key={l}
-                          className={`flex h-8 w-8 items-center justify-center rounded-lg font-display text-sm font-bold transition-all ${
+                          className={`flex h-8 w-8 items-center justify-center rounded-xl font-sans text-sm font-black transition-all duration-300 ${
                             active
-                              ? "bg-gradient-to-br from-coral to-[#e14a3b] text-[#fff2ee] shadow-[0_0_8px_rgba(255,107,91,0.5)] scale-105 animate-pulse"
-                              : "border border-line bg-bg-deep text-muted/30"
+                              ? "bg-gradient-to-br from-rose to-rose-dark text-white shadow-[0_0_12px_rgba(244,63,94,0.3)] scale-105"
+                              : "border border-line bg-bg-deep/60 text-muted/20"
                           }`}
                         >
                           {l}
@@ -526,15 +533,15 @@ export default function Page() {
                       );
                     })}
                   </div>
-                  <div className="mt-1.5 text-[11px] text-muted">
-                    {oppScore} dari 5 garis
+                  <div className="mt-2 text-[10px] font-semibold text-muted/80">
+                    {oppScore} / 5 Garis
                   </div>
                 </div>
               </div>
 
-              <div className="mb-4.5 mb-5 rounded-2xl border border-line bg-bg-deep p-4">
-                <div className="mb-2.5 text-[10px] tracking-widest text-muted">
-                  ANGKA YANG SUDAH DIPANGGIL ({room.drawnNumbers.length}/25)
+              <div className="mb-5 rounded-3xl border border-line bg-bg-deep/50 p-4.5">
+                <div className="mb-3 text-[9px] uppercase tracking-[0.2em] text-muted/60 font-bold">
+                  ANGKA YANG SUDAH DIPANGGIL ({room.drawnNumbers.length} / 25)
                 </div>
                 <div className="flex gap-2 overflow-x-auto pb-1">
                   <AnimatePresence initial={false}>
@@ -545,7 +552,7 @@ export default function Page() {
                 </div>
               </div>
 
-              <div className="mb-4.5 mb-5 grid grid-cols-5 gap-2">
+              <div className="mb-5 grid grid-cols-5 gap-2.5">
                 {board.map((n, idx) => {
                   const marked = drawnSet.has(n);
                   const clickable = isMyTurn && !marked && room.status === "playing";
@@ -562,16 +569,16 @@ export default function Page() {
                 })}
               </div>
 
-              <div className="rounded-xl border border-dashed border-line bg-bg-deep/40 p-4 text-center">
+              <div className="rounded-2xl border border-dashed border-line bg-bg-panel/20 p-4 text-center">
                 <div className="text-xs text-muted leading-relaxed">
                   {room.status === "playing" ? (
                     isMyTurn ? (
                       <span className="font-semibold text-teal">
-                        👉 Giliranmu! Klik salah satu angka di atas yang belum ditandai untuk memanggilnya.
+                        👉 Giliran Anda! Klik angka yang belum ditandai pada papan Anda.
                       </span>
                     ) : (
                       <span>
-                        ⏳ Menunggu {oppName ?? "lawan"} memilih angka berikutnya...
+                        ⏳ Menunggu {oppName ?? "lawan"} memanggil angka berikutnya...
                       </span>
                     )
                   ) : (
@@ -584,20 +591,33 @@ export default function Page() {
 
           {screen === "result" && room && board && (
             <motion.div key="result" {...fade}>
-              <div className="mb-4 rounded-3xl border border-gold-dark bg-gradient-to-b from-gold/15 to-coral/10 p-6 text-center shadow-panel">
-                <h2 className="mb-1.5 font-display text-2xl font-bold">
-                  {iWon ? "🎉 BINGO! Kamu Menang!" : "😅 BINGO Lawan!"}
+              <div className={`mb-6 rounded-3xl border p-6 text-center shadow-panel backdrop-blur-md ${
+                iWon
+                  ? "border-gold/30 bg-gold/5 text-gold"
+                  : "border-rose/30 bg-rose/5 text-rose"
+              }`}>
+                <h2 className="mb-2 font-sans text-2xl font-black tracking-tight">
+                  {iWon ? "🎉 Kemenangan Mutlak!" : "😅 Lawan Menang Duluan!"}
                 </h2>
-                <div className="text-[13px] text-muted">
+                <p className="text-[13px] text-ink/80 leading-relaxed font-medium">
                   {iWon
-                    ? `Kerja bagus! Kamu mencapai 5 garis BINGO duluan. Skor akhir: ${myScore} - ${oppScore}`
-                    : `${
-                        room.winner === "host" ? room.hostName : room.guestName
-                      } menyelesaikan 5 garis BINGO lebih dulu. Skor akhir: ${myScore} - ${oppScore}`}
+                    ? `Selamat! Anda berhasil mencapai 5 garis BINGO terlebih dahulu.`
+                    : `${room.winner === "host" ? room.hostName : room.guestName} berhasil mencapai 5 garis BINGO lebih dulu.`}
+                </p>
+                <div className="mt-4 flex items-center justify-center gap-4 text-xs font-semibold text-muted select-none">
+                  <div className="flex flex-col items-center">
+                    <span className="text-[10px] tracking-wider text-muted/60 uppercase">Skor Anda</span>
+                    <span className="text-xl font-mono text-ink mt-0.5">{myScore}</span>
+                  </div>
+                  <div className="h-8 w-px bg-line/65" />
+                  <div className="flex flex-col items-center">
+                    <span className="text-[10px] tracking-wider text-muted/60 uppercase">Skor Lawan</span>
+                    <span className="text-xl font-mono text-ink mt-0.5">{oppScore}</span>
+                  </div>
                 </div>
               </div>
 
-              <div className="mb-5 grid grid-cols-5 gap-2">
+              <div className="mb-6 grid grid-cols-5 gap-2.5">
                 {board.map((n, idx) => (
                   <Cell
                     key={n}
@@ -609,9 +629,9 @@ export default function Page() {
               </div>
 
               <motion.button
-                whileTap={{ scale: 0.97 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={handleNewGame}
-                className="w-full rounded-xl bg-gradient-to-r from-gold to-[#ffcf3d] py-3.5 font-display text-[15px] font-semibold text-[#3a2900] shadow-[0_6px_16px_rgba(242,183,5,0.28)]"
+                className="w-full rounded-xl bg-gradient-to-r from-indigo to-violet-600 hover:from-indigo-dark hover:to-violet-700 py-3.5 font-sans text-[15px] font-semibold text-white shadow-[0_4px_14px_rgba(99,102,241,0.25)] transition-all"
               >
                 Main Lagi (Room Baru)
               </motion.button>
