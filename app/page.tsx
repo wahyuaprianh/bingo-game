@@ -329,7 +329,7 @@ export default function Page() {
 
       <Confetti show={screen === "result" && iWon} />
 
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-[360px]">
         <div className="mb-8 flex items-center justify-center gap-3">
           <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo to-violet-600 shadow-md">
             <span className="font-mono text-lg font-black text-white select-none">B</span>
@@ -480,26 +480,26 @@ export default function Page() {
 
           {screen === "game" && room && board && (
             <motion.div key="game" {...fade}>
-              <div className="mb-4 flex items-center justify-between gap-2.5 select-none">
+              <div className="mb-3 flex items-center justify-between gap-2 select-none">
                 <div
-                  className={`flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-bold uppercase tracking-wider ${
+                  className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider ${
                     isMyTurn
                       ? "border-teal/30 bg-teal/10 text-teal"
                       : "border-indigo/35 bg-indigo/10 text-indigo"
                   }`}
                 >
-                  <span className={`h-2 w-2 rounded-full ${isMyTurn ? "bg-teal animate-pulse" : "bg-indigo animate-pulse"}`} />
+                  <span className={`h-1.5 w-1.5 rounded-full ${isMyTurn ? "bg-teal animate-pulse" : "bg-indigo"}`} />
                   {isMyTurn ? "Giliran Anda" : `Giliran ${oppName ?? "Lawan"}`}
                 </div>
                 <button
                   onClick={() => setSoundOn((s) => !s)}
-                  className="rounded-full border border-line hover:border-teal/50 bg-bg-panel/20 hover:bg-teal/5 px-4 py-2 text-xs font-semibold text-muted hover:text-teal transition-all"
+                  className="rounded-full border border-line hover:border-teal/50 bg-bg-panel/20 hover:bg-teal/5 px-3 py-1.5 text-[11px] font-semibold text-muted hover:text-teal transition-all"
                 >
                   {soundOn ? "🔊 Suara: On" : "🔇 Suara: Off"}
                 </button>
               </div>
 
-              <div className="mb-4 flex items-center justify-between rounded-2xl border border-line bg-bg-deep/50 px-4 py-3 text-xs text-muted/80">
+              <div className="mb-3 flex items-center justify-between rounded-xl border border-line bg-bg-deep/50 px-3 py-2 text-[11px] text-muted/80 select-none">
                 <span>
                   Room: <b className="text-ink font-mono tracking-wider">{roomCode}</b>
                 </span>
@@ -508,76 +508,63 @@ export default function Page() {
                 </span>
               </div>
 
-              {/* Score Panel B-I-N-G-O */}
-              <div className="mb-6 grid grid-cols-2 gap-4 rounded-3xl border border-line bg-bg-panel/40 backdrop-blur-md p-5 shadow-panel text-center">
-                {/* Kamu */}
-                <div className="flex flex-col items-center border-r border-line/65 pr-2">
-                  <div className="mb-2 text-[9px] uppercase tracking-[0.2em] font-semibold text-muted/60">BINGO KAMU</div>
-                  <div className="flex gap-1">
-                    {["B", "I", "N", "G", "O"].map((l, i) => {
-                      const active = myScore > i;
-                      return (
-                        <span
-                          key={l}
-                          className={`flex h-8 w-8 items-center justify-center rounded-xl font-sans text-sm font-black transition-all duration-300 ${
-                            active
-                              ? "bg-gradient-to-br from-gold to-gold-dark text-[#3a2900] shadow-[0_0_12px_rgba(251,191,36,0.35)] scale-105"
-                              : "border border-line bg-bg-deep/60 text-muted/20"
-                          }`}
-                        >
-                          {l}
-                        </span>
-                      );
-                    })}
-                  </div>
-                  <div className="mt-2 text-[10px] font-semibold text-muted/80">
-                    {myScore} / 5 Garis
-                  </div>
-                </div>
-
-                {/* Lawan */}
-                <div className="flex flex-col items-center pl-2">
-                  <div className="mb-2 text-[9px] uppercase tracking-[0.2em] font-semibold text-muted/60">
-                    BINGO {oppName ? oppName.toUpperCase() : "LAWAN"}
-                  </div>
-                  <div className="flex gap-1">
-                    {["B", "I", "N", "G", "O"].map((l, i) => {
-                      const active = oppScore > i;
-                      return (
-                        <span
-                          key={l}
-                          className={`flex h-8 w-8 items-center justify-center rounded-xl font-sans text-sm font-black transition-all duration-300 ${
-                            active
-                              ? "bg-gradient-to-br from-rose to-rose-dark text-white shadow-[0_0_12px_rgba(244,63,94,0.3)] scale-105"
-                              : "border border-line bg-bg-deep/60 text-muted/20"
-                          }`}
-                        >
-                          {l}
-                        </span>
-                      );
-                    })}
-                  </div>
-                  <div className="mt-2 text-[10px] font-semibold text-muted/80">
-                    {oppScore} / 5 Garis
-                  </div>
-                </div>
-              </div>
-
-              <div className="mb-5 rounded-3xl border border-line bg-bg-deep/50 p-4.5">
-                <div className="mb-3 text-[9px] uppercase tracking-[0.2em] text-muted/60 font-bold">
-                  ANGKA YANG SUDAH DIPANGGIL ({room.drawnNumbers.length} / 25)
-                </div>
-                <div className="flex gap-2 overflow-x-auto pb-1">
-                  <AnimatePresence initial={false}>
-                    {room.drawnNumbers.map((n, i) => (
-                      <Ball key={n} num={n} latest={i === room.drawnNumbers.length - 1} />
+              {/* Ultra-Compact Score Panel (Single Row) */}
+              <div className="mb-3 flex items-center justify-between rounded-2xl border border-line bg-bg-panel/30 p-3 shadow-sm text-xs font-semibold select-none">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[9px] text-muted/60 font-bold uppercase">KAMU:</span>
+                  <div className="flex gap-0.5">
+                    {["B", "I", "N", "G", "O"].map((l, i) => (
+                      <span
+                        key={l}
+                        className={`flex h-6 w-6 items-center justify-center rounded-lg font-sans text-xs font-black transition-all ${
+                          myScore > i
+                            ? "bg-gradient-to-br from-gold to-gold-dark text-[#3a2900] shadow-[0_0_8px_rgba(251,191,36,0.3)] scale-105"
+                            : "border border-line bg-bg-deep/40 text-muted/20"
+                        }`}
+                      >
+                        {l}
+                      </span>
                     ))}
-                  </AnimatePresence>
+                  </div>
+                </div>
+                <div className="h-6 w-px bg-line/65" />
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[9px] text-muted/60 font-bold uppercase">LAWAN:</span>
+                  <div className="flex gap-0.5">
+                    {["B", "I", "N", "G", "O"].map((l, i) => (
+                      <span
+                        key={l}
+                        className={`flex h-6 w-6 items-center justify-center rounded-lg font-sans text-xs font-black transition-all ${
+                          oppScore > i
+                            ? "bg-gradient-to-br from-rose to-rose-dark text-white shadow-[0_0_8px_rgba(244,63,94,0.25)] scale-105"
+                            : "border border-line bg-bg-deep/40 text-muted/20"
+                        }`}
+                      >
+                        {l}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
 
-              <div className="relative mb-5">
-                <div className="grid grid-cols-5 gap-2.5">
+              {/* Inline Called History Track */}
+              <div className="mb-3 rounded-2xl border border-line bg-bg-deep/50 px-3 py-2">
+                <div className="flex gap-1.5 items-center overflow-hidden">
+                  <span className="text-[9px] uppercase tracking-wider text-muted/60 font-bold mr-1 flex-shrink-0">
+                    RIWAYAT ({room.drawnNumbers.length}):
+                  </span>
+                  <div className="flex gap-1 overflow-x-auto pb-0.5 scrollbar-thin">
+                    <AnimatePresence initial={false}>
+                      {room.drawnNumbers.map((n, i) => (
+                        <Ball key={n} num={n} latest={i === room.drawnNumbers.length - 1} />
+                      ))}
+                    </AnimatePresence>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative mb-3">
+                <div className="grid grid-cols-5 gap-2">
                   {board.map((n, idx) => {
                     const marked = drawnSet.has(n);
                     const clickable = isMyTurn && !marked && room.status === "playing";
@@ -610,7 +597,7 @@ export default function Page() {
                           x2={coords.x2}
                           y2={coords.y2}
                           stroke="#fbbf24"
-                          strokeWidth="6"
+                          strokeWidth="5"
                           strokeLinecap="round"
                           className="drop-shadow-[0_0_8px_rgba(251,191,36,0.85)]"
                         />
@@ -620,16 +607,16 @@ export default function Page() {
                 )}
               </div>
 
-              <div className="rounded-2xl border border-dashed border-line bg-bg-panel/20 p-4 text-center">
-                <div className="text-xs text-muted leading-relaxed">
+              <div className="mt-3 text-center select-none">
+                <div className="text-xs text-muted/80 leading-relaxed">
                   {room.status === "playing" ? (
                     isMyTurn ? (
-                      <span className="font-semibold text-teal">
-                        👉 Giliran Anda! Klik angka yang belum ditandai pada papan Anda.
+                      <span className="font-semibold text-teal animate-pulse">
+                        👉 Giliran Anda! Klik angka di papan Anda.
                       </span>
                     ) : (
                       <span>
-                        ⏳ Menunggu {oppName ?? "lawan"} memanggil angka berikutnya...
+                        ⏳ Menunggu {oppName ?? "lawan"} memanggil angka...
                       </span>
                     )
                   ) : (
