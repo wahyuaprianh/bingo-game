@@ -39,6 +39,29 @@ function roomRef(code: string) {
   return doc(db, "rooms", code);
 }
 
+function getLineCoordinates(line: number[]) {
+  const sorted = line.slice().sort((a, b) => a - b);
+  // Diagonal 1 [0, 6, 12, 18, 24]
+  if (sorted[0] === 0 && sorted[4] === 24) {
+    return { x1: "10%", y1: "10%", x2: "90%", y2: "90%" };
+  }
+  // Diagonal 2 [4, 8, 12, 16, 20]
+  if (sorted[0] === 4 && sorted[4] === 20) {
+    return { x1: "90%", y1: "10%", x2: "10%", y2: "90%" };
+  }
+  // Row (consecutive indices)
+  const isRow = sorted[1] - sorted[0] === 1;
+  if (isRow) {
+    const r = Math.floor(sorted[0] / 5);
+    const y = `${r * 20 + 10}%`;
+    return { x1: "10%", y1: y, x2: "90%", y2: y };
+  }
+  // Column
+  const c = sorted[0] % 5;
+  const x = `${c * 20 + 10}%`;
+  return { x1: x, y1: "10%", x2: x, y2: "90%" };
+}
+
 export default function Page() {
   const [screen, setScreen] = useState<Screen>("home");
   const [name, setName] = useState("");
@@ -224,6 +247,7 @@ export default function Page() {
       }
 
       if (room.status === "finished" && room.winner) {
+        sfx(room.winner === role ? "win" : "lose", soundOn);
         setScreen("result");
       }
     }
@@ -294,7 +318,7 @@ export default function Page() {
   const oppScore = role === "host" ? (room?.guestScore ?? 0) : (room?.hostScore ?? 0);
 
   return (
-    <main className="flex min-h-screen items-start justify-center px-4 pb-16 pt-7">
+    <main className="flex min-h-screen items-start justify-center px-4 pb-10 pt-4">
       {screen !== "home" && (
         <div className="fixed right-3 top-3 z-40 rounded-full border border-line bg-bg-panel px-3 py-1 text-[10px] tracking-widest text-muted">
           <span className={connected ? "text-teal" : ""}>
@@ -305,7 +329,7 @@ export default function Page() {
 
       <Confetti show={screen === "result" && iWon} />
 
-      <div className="w-full max-w-xl">
+      <div className="w-full max-w-md">
         <div className="mb-8 flex items-center justify-center gap-3">
           <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo to-violet-600 shadow-md">
             <span className="font-mono text-lg font-black text-white select-none">B</span>
@@ -552,21 +576,48 @@ export default function Page() {
                 </div>
               </div>
 
-              <div className="mb-5 grid grid-cols-5 gap-2.5">
-                {board.map((n, idx) => {
-                  const marked = drawnSet.has(n);
-                  const clickable = isMyTurn && !marked && room.status === "playing";
-                  return (
-                    <Cell
-                      key={n}
-                      num={n}
-                      marked={marked}
-                      onBingoLine={bingoIndices.has(idx)}
-                      clickable={clickable}
-                      onClick={() => handleSelectCell(n)}
-                    />
-                  );
-                })}
+              <div className="relative mb-5">
+                <div className="grid grid-cols-5 gap-2.5">
+                  {board.map((n, idx) => {
+                    const marked = drawnSet.has(n);
+                    const clickable = isMyTurn && !marked && room.status === "playing";
+                    return (
+                      <Cell
+                        key={n}
+                        num={n}
+                        marked={marked}
+                        onBingoLine={bingoIndices.has(idx)}
+                        clickable={clickable}
+                        onClick={() => handleSelectCell(n)}
+                      />
+                    );
+                  })}
+                </div>
+
+                {/* SVG Overlay for completed BINGO lines */}
+                {completedLines.length > 0 && (
+                  <svg className="absolute inset-0 pointer-events-none w-full h-full z-10 overflow-visible">
+                    {completedLines.map((line, idx) => {
+                      const coords = getLineCoordinates(line);
+                      return (
+                        <motion.line
+                          key={idx}
+                          initial={{ pathLength: 0 }}
+                          animate={{ pathLength: 1 }}
+                          transition={{ duration: 0.4, ease: "easeOut", delay: idx * 0.1 }}
+                          x1={coords.x1}
+                          y1={coords.y1}
+                          x2={coords.x2}
+                          y2={coords.y2}
+                          stroke="#fbbf24"
+                          strokeWidth="6"
+                          strokeLinecap="round"
+                          className="drop-shadow-[0_0_8px_rgba(251,191,36,0.85)]"
+                        />
+                      );
+                    })}
+                  </svg>
+                )}
               </div>
 
               <div className="rounded-2xl border border-dashed border-line bg-bg-panel/20 p-4 text-center">
@@ -617,15 +668,42 @@ export default function Page() {
                 </div>
               </div>
 
-              <div className="mb-6 grid grid-cols-5 gap-2.5">
-                {board.map((n, idx) => (
-                  <Cell
-                    key={n}
-                    num={n}
-                    marked={drawnSet.has(n)}
-                    onBingoLine={bingoIndices.has(idx)}
-                  />
-                ))}
+              <div className="relative mb-6">
+                <div className="grid grid-cols-5 gap-2.5">
+                  {board.map((n, idx) => (
+                    <Cell
+                      key={n}
+                      num={n}
+                      marked={drawnSet.has(n)}
+                      onBingoLine={bingoIndices.has(idx)}
+                    />
+                  ))}
+                </div>
+
+                {/* SVG Overlay for completed BINGO lines */}
+                {completedLines.length > 0 && (
+                  <svg className="absolute inset-0 pointer-events-none w-full h-full z-10 overflow-visible">
+                    {completedLines.map((line, idx) => {
+                      const coords = getLineCoordinates(line);
+                      return (
+                        <motion.line
+                          key={idx}
+                          initial={{ pathLength: 0 }}
+                          animate={{ pathLength: 1 }}
+                          transition={{ duration: 0.4, ease: "easeOut", delay: idx * 0.1 }}
+                          x1={coords.x1}
+                          y1={coords.y1}
+                          x2={coords.x2}
+                          y2={coords.y2}
+                          stroke="#fbbf24"
+                          strokeWidth="6"
+                          strokeLinecap="round"
+                          className="drop-shadow-[0_0_8px_rgba(251,191,36,0.85)]"
+                        />
+                      );
+                    })}
+                  </svg>
+                )}
               </div>
 
               <motion.button
