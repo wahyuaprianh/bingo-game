@@ -84,6 +84,7 @@ export default function Page() {
   }
 
   async function handleCreate() {
+    console.log("handleCreate called. Name:", name);
     if (!name.trim()) {
       setError("Isi nama dulu ya.");
       return;
@@ -93,6 +94,7 @@ export default function Page() {
 
     const code = genRoomCode();
     const myBoard = genBoard();
+    console.log("Generated Room Code:", code, "Board:", myBoard);
     localStorage.setItem("bingo_board_" + code, JSON.stringify(myBoard));
 
     const newRoom: Room = {
@@ -108,10 +110,13 @@ export default function Page() {
       winner: null
     };
 
+    console.log("Saving new room to Firestore...", newRoom);
     try {
       await setDoc(roomRef(code), newRoom);
-    } catch {
-      setError("Gagal terhubung ke server. Cek koneksi / config Firebase.");
+      console.log("Successfully saved room to Firestore!");
+    } catch (err) {
+      console.error("Firebase setDoc error:", err);
+      setError("Gagal terhubung ke server: " + (err instanceof Error ? err.message : String(err)));
       return;
     }
 
@@ -125,6 +130,7 @@ export default function Page() {
 
   async function handleJoin() {
     const code = codeInput.trim().toUpperCase();
+    console.log("handleJoin called. Name:", name, "Code:", code);
     if (!name.trim()) {
       setError("Isi nama dulu ya.");
       return;
@@ -137,10 +143,13 @@ export default function Page() {
     unlockAudio();
 
     let snap;
+    console.log("Fetching room from Firestore with code:", code);
     try {
       snap = await getDoc(roomRef(code));
-    } catch {
-      setError("Gagal terhubung ke server. Cek koneksi / config Firebase.");
+      console.log("Successfully fetched room from Firestore. Exists:", snap.exists());
+    } catch (err) {
+      console.error("Firebase getDoc error:", err);
+      setError("Gagal terhubung ke server: " + (err instanceof Error ? err.message : String(err)));
       return;
     }
     if (!snap.exists()) {
