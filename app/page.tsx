@@ -318,7 +318,7 @@ export default function Page() {
   const oppScore = role === "host" ? (room?.guestScore ?? 0) : (room?.hostScore ?? 0);
 
   return (
-    <main className="flex min-h-screen items-start justify-center px-4 pb-10 pt-4">
+    <main className="flex h-screen w-screen flex-col items-center justify-center px-4 overflow-hidden bg-[#090a0f] text-[#f4f4f5] select-none">
       {screen !== "home" && (
         <div className="fixed right-3 top-3 z-40 rounded-full border border-line bg-bg-panel px-3 py-1 text-[10px] tracking-widest text-muted">
           <span className={connected ? "text-teal" : ""}>
@@ -329,7 +329,7 @@ export default function Page() {
 
       <Confetti show={screen === "result" && iWon} />
 
-      <div className="w-full max-w-[360px]">
+      <div className="w-full max-w-[min(380px,65vh)] flex flex-col justify-center">
         <div className="mb-8 flex items-center justify-center gap-3">
           <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo to-violet-600 shadow-md">
             <span className="font-mono text-lg font-black text-white select-none">B</span>
